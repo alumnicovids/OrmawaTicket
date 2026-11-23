@@ -1,4 +1,5 @@
 import { FlatList, StyleSheet, Text } from 'react-native';
+import { router } from 'expo-router';
 import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
 import { Card } from '../components/Card';
@@ -17,7 +18,7 @@ export function OrmawaScreen() {
       data={data}
       keyExtractor={(o) => o.id}
       renderItem={({ item }) => (
-        <Card>
+        <Card onPress={() => router.push(`/ormawa/${item.id}`)}>
           <Text style={styles.name}>{item.name}</Text>
           <Text style={styles.muted}>{item.description}</Text>
         </Card>
