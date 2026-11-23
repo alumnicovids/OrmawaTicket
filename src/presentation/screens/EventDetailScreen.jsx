@@ -5,6 +5,7 @@ import { useAsync } from '../hooks/useAsync';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Loading } from '../components/Loading';
+import { StockText } from '../components/StockText';
 import { dateTime, rupiah } from '../format';
 import { theme } from '../theme';
 
@@ -26,9 +27,7 @@ export function EventDetailScreen() {
           <Card key={c.id}>
             <Text style={styles.categoryName}>{c.name}</Text>
             <Text style={styles.text}>{rupiah(c.price)}</Text>
-            <Text style={c.stock ? styles.muted : styles.danger}>
-              {c.stock ? `Sisa ${c.stock}` : 'Habis'}
-            </Text>
+            <StockText stock={c.stock} />
           </Card>
         ))}
       </View>
@@ -43,7 +42,6 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: '700', color: theme.text },
   muted: { color: theme.muted },
   text: { color: theme.text },
-  danger: { color: theme.danger },
   categories: { gap: 8 },
   categoryName: { fontWeight: '600', color: theme.text },
 });

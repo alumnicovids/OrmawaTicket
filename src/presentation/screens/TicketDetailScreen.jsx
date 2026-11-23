@@ -1,7 +1,8 @@
 import { ScrollView, StyleSheet, Text } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
+import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Loading } from '../components/Loading';
 import { dateTime, rupiah } from '../format';
@@ -23,13 +24,14 @@ export function TicketDetailScreen() {
         <Text style={styles.text}>Total {rupiah(ticket.totalPrice)}</Text>
         <Text style={styles.muted}>Dibeli {dateTime(ticket.purchasedAt)}</Text>
       </Card>
+      <Button title="Lihat Tiket Saya" onPress={() => router.navigate('/tickets')} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   scroll: { backgroundColor: theme.bg },
-  content: { padding: 16 },
+  content: { padding: 16, gap: 16 },
   muted: { color: theme.muted },
   text: { color: theme.text },
   code: { fontSize: 28, fontWeight: '800', color: theme.primary, letterSpacing: 2 },

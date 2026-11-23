@@ -5,6 +5,7 @@ import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
 import { Button } from '../components/Button';
 import { Loading } from '../components/Loading';
+import { StockText } from '../components/StockText';
 import { rupiah } from '../format';
 import { theme } from '../theme';
 
@@ -45,7 +46,7 @@ export function CheckoutScreen() {
             style={[styles.option, selected && styles.optionSelected, c.stock === 0 && styles.optionDisabled]}
           >
             <Text style={styles.text}>{c.name} · {rupiah(c.price)}</Text>
-            <Text style={styles.muted}>{c.stock ? `Sisa ${c.stock}` : 'Habis'}</Text>
+            <StockText stock={c.stock} />
           </Pressable>
         );
       })}
@@ -74,7 +75,6 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: '700', color: theme.text },
   label: { fontWeight: '600', color: theme.text },
   text: { color: theme.text },
-  muted: { color: theme.muted },
   danger: { color: theme.danger },
   option: {
     padding: 14,

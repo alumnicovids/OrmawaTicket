@@ -5,5 +5,6 @@ export const theme = {
   text: '#111827',
   muted: '#6B7280',
   danger: '#DC2626',
+  warning: '#D97706',
   radius: 12,
 };
