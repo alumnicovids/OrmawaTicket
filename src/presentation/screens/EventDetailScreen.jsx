@@ -32,23 +32,31 @@ function EventDetailSkeleton() {
 export function EventDetailScreen() {
   const { id } = useLocalSearchParams();
   const load = useCallback(async () => {
-    const [event, ormawa] = await Promise.all([container.getEventById.execute(id), container.getOrmawaList.execute()]);
+    const [event, ormawa, categories] = await Promise.all([
+      container.getEventById.execute(id),
+      container.getOrmawaList.execute(),
+      container.getEventCategories.execute(),
+    ]);
     // Event tidak ditemukan dijadikan error supaya tidak skeleton selamanya.
     if (!event) throw new Error('Event tidak ditemukan');
-    return { event, ormawaName: ormawa.find((o) => o.id === event.ormawaId)?.name };
+    return {
+      event,
+      ormawaName: ormawa.find((o) => o.id === event.ormawaId)?.name,
+      categoryName: categories.find((c) => c.id === event.category)?.name,
+    };
   }, [id]);
 
   const { data, error } = useAsync(load);
   if (!data) return <Loading error={error} skeleton={<EventDetailSkeleton />} />;
 
-  const { event, ormawaName } = data;
+  const { event, ormawaName, categoryName } = data;
   const soldOut = event.categories.every((c) => c.stock === 0);
   return (
     <View style={styles.container}>
       <ScrollView>
         <EventPoster uri={event.imageUrl} />
         <View style={styles.body}>
-          <Text style={styles.ormawa}>{ormawaName}</Text>
+          <Text style={styles.ormawa}>{[ormawaName, categoryName].filter(Boolean).join(' · ')}</Text>
           <Text style={styles.title}>{event.title}</Text>
           <IconText icon={Calendar}>{dateTime(event.date)}</IconText>
           <IconText icon={MapPin}>{event.location}</IconText>

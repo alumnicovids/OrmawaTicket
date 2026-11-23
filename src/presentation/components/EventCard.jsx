@@ -7,7 +7,7 @@ import { Skeleton } from './Skeleton';
 import { rupiah } from '../format';
 import { font, radius, shadow, space, theme } from '../theme';
 
-export function EventCard({ event, ormawaName, featured, onPress }) {
+export function EventCard({ event, ormawaName, categoryName, featured, onPress }) {
   const minPrice = Math.min(...event.categories.map((c) => c.price));
   const soldOut = event.categories.every((c) => c.stock === 0);
   return (
@@ -21,7 +21,7 @@ export function EventCard({ event, ormawaName, featured, onPress }) {
           <DateBadge iso={event.date} />
         </EventPoster>
         <View style={styles.body}>
-          <Text style={styles.ormawa}>{ormawaName}</Text>
+          <Text style={styles.ormawa}>{[ormawaName, categoryName].filter(Boolean).join(' · ')}</Text>
           <Text style={featured ? styles.titleFeatured : styles.title} numberOfLines={2}>{event.title}</Text>
           <IconText icon={MapPin}>{event.location}</IconText>
           <Text style={soldOut ? styles.soldOut : styles.price}>

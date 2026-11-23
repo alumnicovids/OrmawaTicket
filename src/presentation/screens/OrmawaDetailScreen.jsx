@@ -21,19 +21,20 @@ function OrmawaDetailSkeleton() {
 export function OrmawaDetailScreen() {
   const { id } = useLocalSearchParams();
   const load = useCallback(async () => {
-    const [ormawaList, events] = await Promise.all([
+    const [ormawaList, events, categories] = await Promise.all([
       container.getOrmawaList.execute(),
       container.searchEvents.execute({ ormawaId: id }),
+      container.getEventCategories.execute(),
     ]);
     const ormawa = ormawaList.find((o) => o.id === id);
     if (!ormawa) throw new Error('Ormawa tidak ditemukan');
-    return { ormawa, events };
+    return { ormawa, events, categoryNames: Object.fromEntries(categories.map((c) => [c.id, c.name])) };
   }, [id]);
 
   const { data, error } = useAsync(load);
   if (!data) return <Loading error={error} skeleton={<OrmawaDetailSkeleton />} />;
 
-  const { ormawa, events } = data;
+  const { ormawa, events, categoryNames } = data;
   return (
     <FlatList
       style={styles.list}
@@ -50,7 +51,7 @@ export function OrmawaDetailScreen() {
       }
       ListEmptyComponent={<Text style={styles.empty}>Belum ada event.</Text>}
       renderItem={({ item }) => (
-        <EventCard event={item} ormawaName={ormawa.name} onPress={() => router.push(`/event/${item.id}`)} />
+        <EventCard event={item} ormawaName={ormawa.name} categoryName={categoryNames[item.category]} onPress={() => router.push(`/event/${item.id}`)} />
       )}
     />
   );

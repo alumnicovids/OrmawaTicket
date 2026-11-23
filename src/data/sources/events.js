@@ -1,6 +1,7 @@
 export const eventData = [
   {
     id: "e1",
+    category: "musik",
     imageUrl: "https://picsum.photos/seed/e1/800/450",
     ormawaId: "ukm-musik",
     title: "Konser Musik Kampus",
@@ -14,6 +15,7 @@ export const eventData = [
   },
   {
     id: "e2",
+    category: "seminar",
     imageUrl: "https://picsum.photos/seed/e2/800/450",
     ormawaId: "hima-if",
     title: "Seminar Web & Mobile Dev",
@@ -27,6 +29,7 @@ export const eventData = [
   },
   {
     id: "e3",
+    category: "festival",
     imageUrl: "https://picsum.photos/seed/e3/800/450",
     ormawaId: "bem",
     title: "Dies Natalis Fair",
@@ -40,6 +43,7 @@ export const eventData = [
   },
   {
     id: "e4",
+    category: "lomba",
     imageUrl: "https://picsum.photos/seed/e4/800/450",
     ormawaId: "hima-if",
     title: "Hackathon 24 Jam",
@@ -52,6 +56,7 @@ export const eventData = [
   },
   {
     id: "e5",
+    category: "musik",
     imageUrl: "https://picsum.photos/seed/e5/800/450",
     ormawaId: "ukm-musik",
     title: "Open Mic Night",

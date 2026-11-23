@@ -24,23 +24,32 @@ function HomeSkeleton() {
 
 export function HomeScreen() {
   const [query, setQuery] = useState('');
-  const [ormawaId, setOrmawaId] = useState(null);
+  const [category, setCategory] = useState(null);
 
   const load = useCallback(async () => {
-    const [events, ormawa] = await Promise.all([
-      container.searchEvents.execute({ query, ormawaId }),
+    const [events, ormawa, categories] = await Promise.all([
+      container.searchEvents.execute({ query, category }),
       container.getOrmawaList.execute(),
+      container.getEventCategories.execute(),
     ]);
-    const names = Object.fromEntries(ormawa.map((o) => [o.id, o.name]));
-    return { ormawa, items: events.map((event) => ({ event, ormawaName: names[event.ormawaId] })) };
-  }, [query, ormawaId]);
+    const ormawaNames = Object.fromEntries(ormawa.map((o) => [o.id, o.name]));
+    const categoryNames = Object.fromEntries(categories.map((c) => [c.id, c.name]));
+    return {
+      categories,
+      items: events.map((event) => ({
+        event,
+        ormawaName: ormawaNames[event.ormawaId],
+        categoryName: categoryNames[event.category],
+      })),
+    };
+  }, [query, category]);
 
   // Data lama tetap tampil saat memuat ulang, jadi TextInput tidak ikut hilang.
   const { data, error } = useAsync(load);
   if (!data) return <Loading error={error} skeleton={<HomeSkeleton />} />;
 
-  const chips = [{ id: null, name: 'Semua' }, ...data.ormawa];
-  const filtering = Boolean(query.trim()) || ormawaId !== null;
+  const chips = [{ id: null, name: 'Semua' }, ...data.categories];
+  const filtering = Boolean(query.trim()) || category !== null;
   return (
     <SafeAreaView edges={['top']} style={styles.container}>
       <Text style={styles.title}>Temukan event kampus</Text>
@@ -59,7 +68,7 @@ export function HomeScreen() {
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll} contentContainerStyle={styles.chips}>
         {chips.map((c) => (
-          <Chip key={String(c.id)} label={c.name} selected={c.id === ormawaId} onPress={() => setOrmawaId(c.id)} />
+          <Chip key={String(c.id)} label={c.name} selected={c.id === category} onPress={() => setCategory(c.id)} />
         ))}
       </ScrollView>
       <FlatList
