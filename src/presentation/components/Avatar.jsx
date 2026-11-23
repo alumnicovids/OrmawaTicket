@@ -14,7 +14,7 @@ const initials = (name) =>
   name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 
 export function Avatar({ name, large }) {
-  const color = colors[`c${[...name].reduce((n, ch) => n + ch.charCodeAt(0), 0) % 5}`];
+  const color = colors[`c${[...name].reduce((n, ch) => (n * 31 + ch.charCodeAt(0)) >>> 0, 0) % 5}`];
   return (
     <View style={[styles.base, large ? styles.large : styles.medium, color]}>
       <Text style={large ? styles.textLarge : styles.text}>{initials(name)}</Text>

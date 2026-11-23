@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     borderColor: theme.border,
   },
   search: { flex: 1, minHeight: 48, fontSize: font.md, color: theme.text },
-  chipsScroll: { flexGrow: 0 },
+  chipsScroll: { flexGrow: 0, flexShrink: 0 },
   chips: { paddingHorizontal: space.lg, paddingBottom: space.md, gap: space.sm },
   content: { padding: space.lg, gap: space.lg },
   empty: { color: theme.muted, textAlign: 'center', marginTop: space.xxl },
