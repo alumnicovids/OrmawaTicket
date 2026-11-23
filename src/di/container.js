@@ -1,7 +1,7 @@
 import { EventRepositoryImpl } from '../data/repositories/EventRepositoryImpl';
 import { OrmawaRepositoryImpl } from '../data/repositories/OrmawaRepositoryImpl';
 import { TicketRepositoryImpl } from '../data/repositories/TicketRepositoryImpl';
-import { GetEvents } from '../domain/usecases/GetEvents';
+import { SearchEvents } from '../domain/usecases/SearchEvents';
 import { GetEventById } from '../domain/usecases/GetEventById';
 import { GetOrmawaList } from '../domain/usecases/GetOrmawaList';
 import { GetMyTickets } from '../domain/usecases/GetMyTickets';
@@ -14,7 +14,7 @@ const ormawaRepository = new OrmawaRepositoryImpl();
 const ticketRepository = new TicketRepositoryImpl();
 
 export const container = {
-  getEvents: new GetEvents(eventRepository),
+  searchEvents: new SearchEvents(eventRepository),
   getEventById: new GetEventById(eventRepository),
   getOrmawaList: new GetOrmawaList(ormawaRepository),
   getMyTickets: new GetMyTickets(ticketRepository),
