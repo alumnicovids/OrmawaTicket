@@ -1,91 +1,139 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import Minus from 'lucide-react-native/icons/minus';
+import Plus from 'lucide-react-native/icons/plus';
 import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
-import { Button } from '../components/Button';
+import { IconButton } from '../components/IconButton';
 import { Loading } from '../components/Loading';
+import { Skeleton } from '../components/Skeleton';
+import { StickyBar } from '../components/StickyBar';
 import { StockText } from '../components/StockText';
 import { rupiah } from '../format';
-import { theme } from '../theme';
+import { font, radius, space, theme } from '../theme';
+
+function CheckoutSkeleton() {
+  return (
+    <View style={styles.body}>
+      <Skeleton style={styles.lineTitle} />
+      <Skeleton style={styles.option} />
+      <Skeleton style={styles.option} />
+    </View>
+  );
+}
 
 export function CheckoutScreen() {
   const { eventId } = useLocalSearchParams();
-  const { data: event, error } = useAsync(
+  const load = useCallback(
     () => container.getEventById.execute(eventId).then((e) => { if (!e) throw new Error('Event tidak ditemukan'); return e; }),
+    [eventId],
   );
+  const { data: event, error } = useAsync(load);
   const [categoryId, setCategoryId] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [buyError, setBuyError] = useState(null);
-  if (!event) return <Loading error={error} />;
+  const [paying, setPaying] = useState(false);
+  if (!event) return <Loading error={error} skeleton={<CheckoutSkeleton />} />;
 
   const category = event.categories.find((c) => c.id === categoryId);
 
   const buy = async () => {
+    setPaying(true);
     try {
       const ticket = await container.purchaseTicket.execute({ eventId, categoryId, quantity });
       router.replace(`/ticket/${ticket.id}`);
     } catch (e) {
       setBuyError(e.message);
+      setPaying(false);
     }
   };
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>{event.title}</Text>
-      <Text style={styles.label}>Pilih kategori</Text>
-      {event.categories.map((c) => {
-        const selected = c.id === categoryId;
-        return (
-          <Pressable
-            key={c.id}
-            accessibilityRole="radio"
-            accessibilityState={{ selected, disabled: c.stock === 0 }}
-            disabled={c.stock === 0}
-            onPress={() => { setCategoryId(c.id); setQuantity(1); setBuyError(null); }}
-            style={[styles.option, selected && styles.optionSelected, c.stock === 0 && styles.optionDisabled]}
-          >
-            <Text style={styles.text}>{c.name} · {rupiah(c.price)}</Text>
-            <StockText stock={c.stock} />
-          </Pressable>
-        );
-      })}
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.body}>
+        <Text style={styles.title}>{event.title}</Text>
+        <Text style={styles.section}>Pilih kategori</Text>
+        {event.categories.map((c) => {
+          const selected = c.id === categoryId;
+          return (
+            <Pressable
+              key={c.id}
+              accessibilityRole="radio"
+              accessibilityState={{ selected, disabled: c.stock === 0 }}
+              disabled={c.stock === 0}
+              onPress={() => { setCategoryId(c.id); setQuantity(1); setBuyError(null); }}
+              style={[styles.option, selected && styles.optionSelected, c.stock === 0 && styles.optionDisabled]}
+            >
+              <View style={[styles.radio, selected && styles.radioSelected]}>
+                {selected && <View style={styles.radioDot} />}
+              </View>
+              <View style={styles.optionInfo}>
+                <Text style={styles.optionName}>{c.name}</Text>
+                <StockText stock={c.stock} />
+              </View>
+              <Text style={styles.optionPrice}>{rupiah(c.price)}</Text>
+            </Pressable>
+          );
+        })}
 
-      {category && (
-        <>
-          <Text style={styles.label}>Jumlah</Text>
-          <View style={styles.stepper}>
-            <Button title="−" disabled={quantity <= 1} onPress={() => setQuantity(quantity - 1)} />
-            <Text style={styles.quantity}>{quantity}</Text>
-            <Button title="+" disabled={quantity >= category.stock} onPress={() => setQuantity(quantity + 1)} />
-          </View>
-          <Text style={styles.total}>Total {rupiah(category.price * quantity)}</Text>
-        </>
-      )}
+        {category && (
+          <>
+            <Text style={styles.section}>Jumlah</Text>
+            <View style={styles.stepper}>
+              <IconButton icon={Minus} label="Kurangi jumlah" disabled={quantity <= 1} onPress={() => setQuantity(quantity - 1)} />
+              <Text accessibilityLiveRegion="polite" style={styles.quantity}>{quantity}</Text>
+              <IconButton icon={Plus} label="Tambah jumlah" disabled={quantity >= category.stock} onPress={() => setQuantity(quantity + 1)} />
+            </View>
+          </>
+        )}
 
-      {buyError && <Text style={styles.danger}>{buyError}</Text>}
-      <Button title="Bayar" disabled={!category} onPress={buy} />
-    </ScrollView>
+        {buyError && <Text accessibilityRole="alert" style={styles.error}>{buyError}</Text>}
+      </ScrollView>
+      <StickyBar
+        label="Total"
+        value={rupiah(category ? category.price * quantity : 0)}
+        buttonTitle={paying ? 'Memproses…' : 'Bayar'}
+        disabled={!category || paying}
+        onPress={buy}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: { backgroundColor: theme.bg },
-  content: { padding: 16, gap: 12 },
-  title: { fontSize: 20, fontWeight: '700', color: theme.text },
-  label: { fontWeight: '600', color: theme.text },
-  text: { color: theme.text },
-  danger: { color: theme.danger },
+  container: { flex: 1, backgroundColor: theme.bg },
+  body: { padding: space.lg, gap: space.md },
+  title: { fontSize: font.xl, fontWeight: '700', color: theme.text },
+  section: { fontSize: font.lg, fontWeight: '700', color: theme.text, marginTop: space.sm },
   option: {
-    padding: 14,
-    borderRadius: theme.radius,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    padding: space.lg,
+    borderRadius: radius.lg,
     backgroundColor: theme.card,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: theme.border,
   },
-  optionSelected: { borderColor: theme.primary },
+  optionSelected: { borderColor: theme.primary, backgroundColor: theme.primarySoft },
   optionDisabled: { opacity: 0.5 },
-  stepper: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  quantity: { fontSize: 18, color: theme.text },
-  total: { fontSize: 18, fontWeight: '700', color: theme.text },
+  optionInfo: { flex: 1, gap: space.xs },
+  optionName: { fontSize: font.md, fontWeight: '600', color: theme.text },
+  optionPrice: { fontSize: font.md, fontWeight: '700', color: theme.text },
+  radio: {
+    width: 22,
+    height: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radius.pill,
+    borderWidth: 2,
+    borderColor: theme.muted,
+  },
+  radioSelected: { borderColor: theme.primary },
+  radioDot: { width: 10, height: 10, borderRadius: radius.pill, backgroundColor: theme.primary },
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: space.xl },
+  quantity: { minWidth: 32, textAlign: 'center', fontSize: font.xl, fontWeight: '700', color: theme.text },
+  error: { color: theme.danger, fontSize: font.sm },
+  lineTitle: { height: 28, width: '70%' },
 });

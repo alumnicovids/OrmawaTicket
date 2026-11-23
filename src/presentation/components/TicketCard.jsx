@@ -1,21 +1,55 @@
-import { StyleSheet, Text } from 'react-native';
-import { Card } from './Card';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import ChevronRight from 'lucide-react-native/icons/chevron-right';
+import { Skeleton } from './Skeleton';
 import { dateTime, rupiah } from '../format';
-import { theme } from '../theme';
+import { font, radius, shadow, space, theme } from '../theme';
 
 export function TicketCard({ ticket, onPress }) {
   return (
-    <Card onPress={onPress}>
-      <Text style={styles.title}>{ticket.eventTitle}</Text>
-      <Text style={styles.muted}>{ticket.id} · {ticket.categoryName} × {ticket.quantity}</Text>
-      <Text style={styles.text}>{rupiah(ticket.totalPrice)}</Text>
-      <Text style={styles.muted}>Dibeli {dateTime(ticket.purchasedAt)}</Text>
-    </Card>
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+    >
+      <View style={styles.main}>
+        <Text style={styles.code}>{ticket.id}</Text>
+        <Text style={styles.title} numberOfLines={2}>{ticket.eventTitle}</Text>
+        <Text style={styles.muted}>{ticket.categoryName} × {ticket.quantity} · {rupiah(ticket.totalPrice)}</Text>
+        <Text style={styles.muted}>Dibeli {dateTime(ticket.purchasedAt)}</Text>
+      </View>
+      <ChevronRight color={theme.muted} size={20} />
+    </Pressable>
+  );
+}
+
+export function TicketCardSkeleton() {
+  return (
+    <View style={styles.card}>
+      <View style={styles.main}>
+        <Skeleton style={styles.lineShort} />
+        <Skeleton style={styles.lineLong} />
+        <Skeleton style={styles.lineMedium} />
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 17, fontWeight: '700', color: theme.text },
-  muted: { color: theme.muted },
-  text: { color: theme.text },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    padding: space.lg,
+    borderRadius: radius.lg,
+    backgroundColor: theme.card,
+    ...shadow,
+  },
+  pressed: { opacity: 0.92 },
+  main: { flex: 1, gap: space.xs },
+  code: { fontSize: font.xs, fontWeight: '700', color: theme.primary, letterSpacing: 1 },
+  title: { fontSize: font.lg, fontWeight: '700', color: theme.text },
+  muted: { fontSize: font.sm, color: theme.muted },
+  lineShort: { height: 12, width: '30%' },
+  lineLong: { height: 20, width: '75%', marginVertical: space.xs },
+  lineMedium: { height: 14, width: '55%' },
 });

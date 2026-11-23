@@ -1,16 +1,29 @@
-import { FlatList, StyleSheet, Text } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
+import { Avatar } from '../components/Avatar';
 import { Card } from '../components/Card';
 import { Loading } from '../components/Loading';
-import { theme } from '../theme';
+import { Skeleton } from '../components/Skeleton';
+import { font, space, theme } from '../theme';
 
-const load = () => container.getOrmawaList.execute();
+const load = async () => {
+  const [ormawa, events] = await Promise.all([container.getOrmawaList.execute(), container.searchEvents.execute()]);
+  return ormawa.map((o) => ({ ...o, eventCount: events.filter((e) => e.ormawaId === o.id).length }));
+};
+
+function OrmawaSkeleton() {
+  return (
+    <View style={styles.content}>
+      {[0, 1, 2].map((i) => <Skeleton key={i} style={styles.skeleton} />)}
+    </View>
+  );
+}
 
 export function OrmawaScreen() {
   const { data, error } = useAsync(load);
-  if (!data) return <Loading error={error} />;
+  if (!data) return <Loading error={error} skeleton={<OrmawaSkeleton />} />;
   return (
     <FlatList
       style={styles.list}
@@ -19,8 +32,14 @@ export function OrmawaScreen() {
       keyExtractor={(o) => o.id}
       renderItem={({ item }) => (
         <Card onPress={() => router.push(`/ormawa/${item.id}`)}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.muted}>{item.description}</Text>
+          <View style={styles.row}>
+            <Avatar name={item.name} />
+            <View style={styles.info}>
+              <Text style={styles.name}>{item.name}</Text>
+              <Text style={styles.muted} numberOfLines={2}>{item.description}</Text>
+              <Text style={styles.count}>{item.eventCount} event</Text>
+            </View>
+          </View>
         </Card>
       )}
     />
@@ -29,7 +48,11 @@ export function OrmawaScreen() {
 
 const styles = StyleSheet.create({
   list: { backgroundColor: theme.bg },
-  content: { padding: 16, gap: 12 },
-  name: { fontSize: 17, fontWeight: '700', color: theme.text },
-  muted: { color: theme.muted },
+  content: { padding: space.lg, gap: space.lg },
+  row: { flexDirection: 'row', gap: space.md },
+  info: { flex: 1, gap: space.xs },
+  name: { fontSize: font.lg, fontWeight: '700', color: theme.text },
+  muted: { fontSize: font.sm, color: theme.muted },
+  count: { fontSize: font.xs, fontWeight: '600', color: theme.primary },
+  skeleton: { height: 96, borderRadius: 20 },
 });

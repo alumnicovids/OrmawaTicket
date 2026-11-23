@@ -1,12 +1,22 @@
 import { useCallback } from 'react';
-import { FlatList, StyleSheet, Text } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
-import { Card } from '../components/Card';
-import { EventCard } from '../components/EventCard';
+import { Avatar } from '../components/Avatar';
+import { EventCard, EventCardSkeleton } from '../components/EventCard';
 import { Loading } from '../components/Loading';
-import { theme } from '../theme';
+import { Skeleton } from '../components/Skeleton';
+import { font, space, theme } from '../theme';
+
+function OrmawaDetailSkeleton() {
+  return (
+    <View style={styles.content}>
+      <Skeleton style={styles.headerSkeleton} />
+      <EventCardSkeleton />
+    </View>
+  );
+}
 
 export function OrmawaDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -21,7 +31,7 @@ export function OrmawaDetailScreen() {
   }, [id]);
 
   const { data, error } = useAsync(load);
-  if (!data) return <Loading error={error} />;
+  if (!data) return <Loading error={error} skeleton={<OrmawaDetailSkeleton />} />;
 
   const { ormawa, events } = data;
   return (
@@ -31,11 +41,12 @@ export function OrmawaDetailScreen() {
       data={events}
       keyExtractor={(e) => e.id}
       ListHeaderComponent={
-        <Card>
+        <View style={styles.header}>
+          <Avatar name={ormawa.name} large />
           <Text style={styles.name}>{ormawa.name}</Text>
           <Text style={styles.muted}>{ormawa.description}</Text>
           <Text style={styles.section}>Event ({events.length})</Text>
-        </Card>
+        </View>
       }
       ListEmptyComponent={<Text style={styles.empty}>Belum ada event.</Text>}
       renderItem={({ item }) => (
@@ -47,9 +58,11 @@ export function OrmawaDetailScreen() {
 
 const styles = StyleSheet.create({
   list: { backgroundColor: theme.bg },
-  content: { padding: 16, gap: 12 },
-  name: { fontSize: 20, fontWeight: '700', color: theme.text },
-  muted: { color: theme.muted },
-  section: { fontWeight: '600', color: theme.text, marginTop: 8 },
+  content: { padding: space.lg, gap: space.lg },
+  header: { gap: space.sm },
+  name: { fontSize: font.xl, fontWeight: '700', color: theme.text },
+  muted: { fontSize: font.md, color: theme.muted },
+  section: { fontSize: font.lg, fontWeight: '700', color: theme.text, marginTop: space.md },
   empty: { color: theme.muted, textAlign: 'center' },
+  headerSkeleton: { height: 140, borderRadius: 20 },
 });

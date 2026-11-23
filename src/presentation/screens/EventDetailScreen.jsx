@@ -1,47 +1,93 @@
+import { useCallback } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import Calendar from 'lucide-react-native/icons/calendar';
+import MapPin from 'lucide-react-native/icons/map-pin';
 import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
-import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { EventPoster } from '../components/EventPoster';
+import { IconText } from '../components/IconText';
 import { Loading } from '../components/Loading';
+import { Skeleton } from '../components/Skeleton';
+import { StickyBar } from '../components/StickyBar';
 import { StockText } from '../components/StockText';
 import { dateTime, rupiah } from '../format';
-import { theme } from '../theme';
+import { font, space, theme } from '../theme';
+
+function EventDetailSkeleton() {
+  return (
+    <View style={styles.container}>
+      <Skeleton style={styles.posterSkeleton} />
+      <View style={styles.body}>
+        <Skeleton style={styles.lineShort} />
+        <Skeleton style={styles.lineTitle} />
+        <Skeleton style={styles.lineMedium} />
+        <Skeleton style={styles.lineMedium} />
+      </View>
+    </View>
+  );
+}
 
 export function EventDetailScreen() {
   const { id } = useLocalSearchParams();
-  const { data: event, error } = useAsync(
-    // Event tidak ditemukan dijadikan error supaya tidak spinner selamanya.
-    () => container.getEventById.execute(id).then((e) => { if (!e) throw new Error('Event tidak ditemukan'); return e; }),
-  );
-  if (!event) return <Loading error={error} />;
+  const load = useCallback(async () => {
+    const [event, ormawa] = await Promise.all([container.getEventById.execute(id), container.getOrmawaList.execute()]);
+    // Event tidak ditemukan dijadikan error supaya tidak skeleton selamanya.
+    if (!event) throw new Error('Event tidak ditemukan');
+    return { event, ormawaName: ormawa.find((o) => o.id === event.ormawaId)?.name };
+  }, [id]);
+
+  const { data, error } = useAsync(load);
+  if (!data) return <Loading error={error} skeleton={<EventDetailSkeleton />} />;
+
+  const { event, ormawaName } = data;
   const soldOut = event.categories.every((c) => c.stock === 0);
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>{event.title}</Text>
-      <Text style={styles.muted}>{dateTime(event.date)} · {event.location}</Text>
-      <Text style={styles.text}>{event.description}</Text>
-      <View style={styles.categories}>
-        {event.categories.map((c) => (
-          <Card key={c.id}>
-            <Text style={styles.categoryName}>{c.name}</Text>
-            <Text style={styles.text}>{rupiah(c.price)}</Text>
-            <StockText stock={c.stock} />
-          </Card>
-        ))}
-      </View>
-      <Button title={soldOut ? 'Tiket habis' : 'Beli Tiket'} disabled={soldOut} onPress={() => router.push(`/checkout/${event.id}`)} />
-    </ScrollView>
+    <View style={styles.container}>
+      <ScrollView>
+        <EventPoster uri={event.imageUrl} />
+        <View style={styles.body}>
+          <Text style={styles.ormawa}>{ormawaName}</Text>
+          <Text style={styles.title}>{event.title}</Text>
+          <IconText icon={Calendar}>{dateTime(event.date)}</IconText>
+          <IconText icon={MapPin}>{event.location}</IconText>
+
+          <Text style={styles.section}>Tentang event</Text>
+          <Text style={styles.text}>{event.description}</Text>
+
+          <Text style={styles.section}>Kategori tiket</Text>
+          {event.categories.map((c) => (
+            <Card key={c.id}>
+              <Text style={styles.categoryName}>{c.name}</Text>
+              <Text style={styles.price}>{rupiah(c.price)}</Text>
+              <StockText stock={c.stock} />
+            </Card>
+          ))}
+        </View>
+      </ScrollView>
+      <StickyBar
+        label="Mulai dari"
+        value={rupiah(Math.min(...event.categories.map((c) => c.price)))}
+        buttonTitle={soldOut ? 'Tiket habis' : 'Beli Tiket'}
+        disabled={soldOut}
+        onPress={() => router.push(`/checkout/${event.id}`)}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: { backgroundColor: theme.bg },
-  content: { padding: 16, gap: 12 },
-  title: { fontSize: 22, fontWeight: '700', color: theme.text },
-  muted: { color: theme.muted },
-  text: { color: theme.text },
-  categories: { gap: 8 },
-  categoryName: { fontWeight: '600', color: theme.text },
+  container: { flex: 1, backgroundColor: theme.bg },
+  body: { padding: space.lg, gap: space.sm },
+  ormawa: { fontSize: font.sm, fontWeight: '600', color: theme.primary },
+  title: { fontSize: font.xxl, fontWeight: '700', color: theme.text },
+  section: { fontSize: font.lg, fontWeight: '700', color: theme.text, marginTop: space.lg },
+  text: { fontSize: font.md, color: theme.text, lineHeight: 24 },
+  categoryName: { fontSize: font.md, fontWeight: '600', color: theme.text },
+  price: { fontSize: font.lg, fontWeight: '700', color: theme.text },
+  posterSkeleton: { aspectRatio: 16 / 9, borderRadius: 0 },
+  lineShort: { height: 14, width: '30%' },
+  lineTitle: { height: 28, width: '80%' },
+  lineMedium: { height: 16, width: '55%' },
 });

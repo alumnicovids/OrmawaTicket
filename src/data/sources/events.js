@@ -1,6 +1,7 @@
 export const eventData = [
   {
     id: "e1",
+    imageUrl: "https://picsum.photos/seed/e1/800/450",
     ormawaId: "ukm-musik",
     title: "Konser Musik Kampus",
     description: "Penampilan band-band mahasiswa dan bintang tamu.",
@@ -13,6 +14,7 @@ export const eventData = [
   },
   {
     id: "e2",
+    imageUrl: "https://picsum.photos/seed/e2/800/450",
     ormawaId: "hima-if",
     title: "Seminar Web & Mobile Dev",
     description: "Seminar bersama praktisi industri.",
@@ -25,6 +27,7 @@ export const eventData = [
   },
   {
     id: "e3",
+    imageUrl: "https://picsum.photos/seed/e3/800/450",
     ormawaId: "bem",
     title: "Dies Natalis Fair",
     description: "Bazar, lomba, dan hiburan memperingati dies natalis.",
@@ -37,6 +40,7 @@ export const eventData = [
   },
   {
     id: "e4",
+    imageUrl: "https://picsum.photos/seed/e4/800/450",
     ormawaId: "hima-if",
     title: "Hackathon 24 Jam",
     description: "Kompetisi pemrograman tim, 24 jam non-stop.",
@@ -48,6 +52,7 @@ export const eventData = [
   },
   {
     id: "e5",
+    imageUrl: "https://picsum.photos/seed/e5/800/450",
     ormawaId: "ukm-musik",
     title: "Open Mic Night",
     description: "Malam panggung terbuka untuk semua mahasiswa.",

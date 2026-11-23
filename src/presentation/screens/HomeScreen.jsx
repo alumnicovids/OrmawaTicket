@@ -1,11 +1,26 @@
 import { useCallback, useState } from 'react';
-import { FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import Search from 'lucide-react-native/icons/search';
 import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
-import { EventCard } from '../components/EventCard';
+import { Chip } from '../components/Chip';
+import { EventCard, EventCardSkeleton } from '../components/EventCard';
 import { Loading } from '../components/Loading';
-import { theme } from '../theme';
+import { font, radius, space, theme } from '../theme';
+
+function HomeSkeleton() {
+  return (
+    <SafeAreaView edges={['top']} style={styles.container}>
+      <Text style={styles.title}>Temukan event kampus</Text>
+      <View style={styles.content}>
+        <EventCardSkeleton />
+        <EventCardSkeleton />
+      </View>
+    </SafeAreaView>
+  );
+}
 
 export function HomeScreen() {
   const [query, setQuery] = useState('');
@@ -22,34 +37,30 @@ export function HomeScreen() {
 
   // Data lama tetap tampil saat memuat ulang, jadi TextInput tidak ikut hilang.
   const { data, error } = useAsync(load);
-  if (!data) return <Loading error={error} />;
+  if (!data) return <Loading error={error} skeleton={<HomeSkeleton />} />;
 
   const chips = [{ id: null, name: 'Semua' }, ...data.ormawa];
+  const filtering = Boolean(query.trim()) || ormawaId !== null;
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.search}
-        placeholder="Cari event"
-        value={query}
-        onChangeText={setQuery}
-        clearButtonMode="while-editing"
-        returnKeyType="search"
-      />
+    <SafeAreaView edges={['top']} style={styles.container}>
+      <Text style={styles.title}>Temukan event kampus</Text>
+      <View style={styles.searchBox}>
+        <Search color={theme.muted} size={18} />
+        <TextInput
+          style={styles.search}
+          placeholder="Cari event"
+          placeholderTextColor={theme.muted}
+          accessibilityLabel="Cari event"
+          value={query}
+          onChangeText={setQuery}
+          clearButtonMode="while-editing"
+          returnKeyType="search"
+        />
+      </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll} contentContainerStyle={styles.chips}>
-        {chips.map((c) => {
-          const selected = c.id === ormawaId;
-          return (
-            <Pressable
-              key={String(c.id)}
-              accessibilityRole="button"
-              accessibilityState={{ selected }}
-              onPress={() => setOrmawaId(c.id)}
-              style={[styles.chip, selected && styles.chipSelected]}
-            >
-              <Text style={selected ? styles.chipTextSelected : styles.chipText}>{c.name}</Text>
-            </Pressable>
-          );
-        })}
+        {chips.map((c) => (
+          <Chip key={String(c.id)} label={c.name} selected={c.id === ormawaId} onPress={() => setOrmawaId(c.id)} />
+        ))}
       </ScrollView>
       <FlatList
         keyboardShouldPersistTaps="handled"
@@ -57,30 +68,36 @@ export function HomeScreen() {
         data={data.items}
         keyExtractor={(item) => item.event.id}
         ListEmptyComponent={<Text style={styles.empty}>Tidak ada event yang cocok.</Text>}
-        renderItem={({ item }) => (
-          <EventCard {...item} onPress={() => router.push(`/event/${item.event.id}`)} />
+        renderItem={({ item, index }) => (
+          <EventCard
+            {...item}
+            featured={index === 0 && !filtering}
+            onPress={() => router.push(`/event/${item.event.id}`)}
+          />
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.bg },
-  search: {
-    margin: 16,
-    marginBottom: 8,
-    padding: 12,
-    borderRadius: theme.radius,
+  title: { fontSize: font.xxl, fontWeight: '700', color: theme.text, paddingHorizontal: space.lg, paddingTop: space.lg },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
+    margin: space.lg,
+    marginBottom: space.md,
+    paddingHorizontal: space.lg,
+    borderRadius: radius.pill,
     backgroundColor: theme.card,
-    color: theme.text,
+    borderWidth: 1,
+    borderColor: theme.border,
   },
+  search: { flex: 1, minHeight: 48, fontSize: font.md, color: theme.text },
   chipsScroll: { flexGrow: 0 },
-  chips: { paddingHorizontal: 16, paddingBottom: 8, gap: 8 },
-  chip: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: 20, backgroundColor: theme.card },
-  chipSelected: { backgroundColor: theme.primary },
-  chipText: { color: theme.text },
-  chipTextSelected: { color: '#fff', fontWeight: '600' },
-  content: { padding: 16, gap: 12 },
-  empty: { color: theme.muted, textAlign: 'center', marginTop: 32 },
+  chips: { paddingHorizontal: space.lg, paddingBottom: space.md, gap: space.sm },
+  content: { padding: space.lg, gap: space.lg },
+  empty: { color: theme.muted, textAlign: 'center', marginTop: space.xxl },
 });
