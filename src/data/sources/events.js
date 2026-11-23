@@ -1,0 +1,41 @@
+export const eventData = [
+  {
+    id: 'e1', ormawaId: 'ukm-musik', title: 'Konser Musik Kampus',
+    description: 'Penampilan band-band mahasiswa dan bintang tamu.',
+    date: '2026-12-12T19:00:00+07:00', location: 'Aula Utama',
+    categories: [
+      { id: 'reguler', name: 'Reguler', price: 35000, stock: 100 },
+      { id: 'vip', name: 'VIP', price: 75000, stock: 20 },
+    ],
+  },
+  {
+    id: 'e2', ormawaId: 'hima-if', title: 'Seminar Web & Mobile Dev',
+    description: 'Seminar bersama praktisi industri.',
+    date: '2026-12-05T09:00:00+07:00', location: 'Gedung Teknik R.301',
+    categories: [
+      { id: 'mahasiswa', name: 'Mahasiswa', price: 15000, stock: 80 },
+      { id: 'umum', name: 'Umum', price: 30000, stock: 40 },
+    ],
+  },
+  {
+    id: 'e3', ormawaId: 'bem', title: 'Dies Natalis Fair',
+    description: 'Bazar, lomba, dan hiburan memperingati dies natalis.',
+    date: '2026-12-20T10:00:00+07:00', location: 'Lapangan Kampus',
+    categories: [
+      { id: 'reguler', name: 'Reguler', price: 10000, stock: 200 },
+      { id: 'paket', name: 'Paket Keluarga', price: 30000, stock: 50 },
+    ],
+  },
+  {
+    id: 'e4', ormawaId: 'hima-if', title: 'Hackathon 24 Jam',
+    description: 'Kompetisi pemrograman tim, 24 jam non-stop.',
+    date: '2026-12-27T08:00:00+07:00', location: 'Lab Komputer',
+    categories: [{ id: 'tim', name: 'Tiket Tim (3 orang)', price: 60000, stock: 30 }],
+  },
+  {
+    id: 'e5', ormawaId: 'ukm-musik', title: 'Open Mic Night',
+    description: 'Malam panggung terbuka untuk semua mahasiswa.',
+    date: '2026-12-08T18:30:00+07:00', location: 'Kantin Pusat',
+    categories: [{ id: 'reguler', name: 'Reguler', price: 5000, stock: 60 }],
+  },
+];
