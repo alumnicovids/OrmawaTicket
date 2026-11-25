@@ -10,6 +10,7 @@ export const theme = {
   danger: '#DC2626',
   skeleton: '#E2E8F0',
   onPrimary: '#FFFFFF',
+  rippleOnPrimary: '#FFFFFF33',
 };
 
 // Skala 4/8.
@@ -32,3 +33,17 @@ export const fonts = {
   bold: 'PlusJakartaSans_700Bold',
   extrabold: 'PlusJakartaSans_800ExtraBold',
 };
+
+// Aksen avatar ormawa (dipilih dari hash nama).
+export const accents = ['#4F46E5', '#0891B2', '#C026D3', '#EA580C', '#16A34A'];
+
+// Warna poster per kategori event: [dasar, aksen]. Cukup gelap agar teks putih terbaca (>= 4.5:1).
+export const posterColors = {
+  musik: ['#4338CA', '#7C3AED'],
+  seminar: ['#0E7490', '#1D4ED8'],
+  lomba: ['#C2410C', '#B91C1C'],
+  festival: ['#A21CAF', '#BE185D'],
+};
+
+// Lingkaran putih dekoratif di poster.
+export const posterOverlay = { strong: 'rgba(255,255,255,0.12)', soft: 'rgba(255,255,255,0.08)' };

@@ -9,7 +9,7 @@ export function Button({ title, onPress, disabled, variant = 'primary', style })
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ disabled }}
-      android_ripple={{ color: secondary ? theme.border : '#ffffff33' }}
+      android_ripple={{ color: secondary ? theme.border : theme.rippleOnPrimary }}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [

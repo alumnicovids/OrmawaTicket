@@ -2,30 +2,32 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from './Text';
 import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
 import Calendar from 'lucide-react-native/icons/calendar';
 import Music from 'lucide-react-native/icons/music';
 import PartyPopper from 'lucide-react-native/icons/party-popper';
 import Presentation from 'lucide-react-native/icons/presentation';
 import Trophy from 'lucide-react-native/icons/trophy';
 import { Skeleton } from './Skeleton';
-import { font, space, theme, fonts } from '../theme';
+import { font, space, theme, fonts, posterColors, posterOverlay } from '../theme';
 
-// Poster buatan kode, dipakai kalau event tidak punya `imageUrl`. Warna gelap supaya teks putih terbaca (>= 4.5:1).
-const looks = {
-  musik: { icon: Music, colors: ['#4338CA', '#7C3AED'] },
-  seminar: { icon: Presentation, colors: ['#0E7490', '#1D4ED8'] },
-  lomba: { icon: Trophy, colors: ['#C2410C', '#B91C1C'] },
-  festival: { icon: PartyPopper, colors: ['#A21CAF', '#BE185D'] },
-};
-const fallbackLook = { icon: Calendar, colors: ['#4338CA', '#7C3AED'] };
+// Poster buatan kode, dipakai kalau event tidak punya `imageUrl`. Warna ada di theme.js.
+const icons = { musik: Music, seminar: Presentation, lomba: Trophy, festival: PartyPopper };
+
+// Warna per kategori lewat StyleSheet (tanpa inline style). Poster memakai View biasa, bukan gradien native:
+// LinearGradient tidak tergambar dengan benar di Expo Go pada beberapa HP Android.
+const byCategory = (index) =>
+  StyleSheet.create(Object.fromEntries(Object.entries(posterColors).map(([name, c]) => [name, { backgroundColor: c[index] }])));
+const base = byCategory(0);
+const accent = byCategory(1);
 
 // `withTitle`: cetak nama ormawa dan judul di poster seperti flyer.
 function GeneratedPoster({ event, ormawaName, withTitle, featured }) {
-  const { icon: Icon, colors } = looks[event.categoryIds[0]] ?? fallbackLook;
+  const category = event.categoryIds[0];
+  const Icon = icons[category] ?? Calendar;
+  const look = category in posterColors ? category : 'musik';
   return (
-    <LinearGradient colors={colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fill}>
-      <View style={styles.circleBig} />
+    <View style={[styles.fill, base[look]]}>
+      <View style={[styles.circleBig, accent[look]]} />
       <View style={styles.circleSmall} />
       {withTitle ? (
         <>
@@ -42,7 +44,7 @@ function GeneratedPoster({ event, ormawaName, withTitle, featured }) {
           <Icon color={theme.onPrimary} size={72} strokeWidth={1.5} />
         </View>
       )}
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -76,7 +78,7 @@ export function EventPoster({ event, ormawaName, withTitle, featured, children }
 
 const styles = StyleSheet.create({
   frame: { aspectRatio: 16 / 9, backgroundColor: theme.skeleton, overflow: 'hidden' },
-  fill: { ...StyleSheet.absoluteFillObject, borderRadius: 0 },
+  fill: { ...StyleSheet.absoluteFill, borderRadius: 0 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   circleBig: {
     position: 'absolute',
@@ -85,7 +87,7 @@ const styles = StyleSheet.create({
     width: 240,
     height: 240,
     borderRadius: 120,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    opacity: 0.6,
   },
   circleSmall: {
     position: 'absolute',
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: posterOverlay.soft,
   },
   watermark: { position: 'absolute', right: space.lg, bottom: space.lg, opacity: 0.3 },
   titleBlock: { position: 'absolute', left: space.lg, bottom: space.lg, maxWidth: '72%', gap: space.xs },
