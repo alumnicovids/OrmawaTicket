@@ -8,6 +8,7 @@ import { Avatar } from '../components/Avatar';
 import { EventCard, EventCardSkeleton } from '../components/EventCard';
 import { Loading } from '../components/Loading';
 import { Skeleton } from '../components/Skeleton';
+import { categoryLabel } from '../format';
 import { font, space, theme, fonts } from '../theme';
 
 function OrmawaDetailSkeleton() {
@@ -29,13 +30,13 @@ export function OrmawaDetailScreen() {
     ]);
     const ormawa = ormawaList.find((o) => o.id === id);
     if (!ormawa) throw new Error('Ormawa tidak ditemukan');
-    return { ormawa, events, categoryNames: Object.fromEntries(categories.map((c) => [c.id, c.name])) };
+    return { ormawa, events, categories };
   }, [id]);
 
   const { data, error, retry } = useAsync(load);
   if (!data) return <Loading error={error} onRetry={retry} skeleton={<OrmawaDetailSkeleton />} />;
 
-  const { ormawa, events, categoryNames } = data;
+  const { ormawa, events, categories } = data;
   return (
     <FlatList
       style={styles.list}
@@ -52,7 +53,7 @@ export function OrmawaDetailScreen() {
       }
       ListEmptyComponent={<Text style={styles.empty}>Belum ada event.</Text>}
       renderItem={({ item }) => (
-        <EventCard event={item} ormawaName={ormawa.name} categoryName={categoryNames[item.category]} onPress={() => router.push(`/event/${item.id}`)} />
+        <EventCard event={item} ormawaName={ormawa.name} categoryName={categoryLabel(item.categoryIds, categories)} onPress={() => router.push(`/event/${item.id}`)} />
       )}
     />
   );

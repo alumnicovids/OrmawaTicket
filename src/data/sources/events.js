@@ -1,7 +1,7 @@
 export const eventData = [
   {
     id: "e1",
-    category: "musik",
+    categoryIds: ["musik", "festival"],
     ormawaId: "ukm-musik",
     title: "Konser Musik Kampus",
     description: "Penampilan band-band mahasiswa dan bintang tamu.",
@@ -14,7 +14,7 @@ export const eventData = [
   },
   {
     id: "e2",
-    category: "seminar",
+    categoryIds: ["seminar"],
     ormawaId: "hima-if",
     title: "Seminar Web & Mobile Dev",
     description: "Seminar bersama praktisi industri.",
@@ -27,7 +27,7 @@ export const eventData = [
   },
   {
     id: "e3",
-    category: "festival",
+    categoryIds: ["festival", "lomba"],
     ormawaId: "bem",
     title: "Dies Natalis Fair",
     description: "Bazar, lomba, dan hiburan memperingati dies natalis.",
@@ -40,7 +40,7 @@ export const eventData = [
   },
   {
     id: "e4",
-    category: "lomba",
+    categoryIds: ["lomba", "seminar"],
     ormawaId: "hima-if",
     title: "Hackathon 24 Jam",
     description: "Kompetisi pemrograman tim, 24 jam non-stop.",
@@ -52,7 +52,7 @@ export const eventData = [
   },
   {
     id: "e5",
-    category: "musik",
+    categoryIds: ["musik", "lomba"],
     ormawaId: "ukm-musik",
     title: "Open Mic Night",
     description: "Malam panggung terbuka untuk semua mahasiswa.",

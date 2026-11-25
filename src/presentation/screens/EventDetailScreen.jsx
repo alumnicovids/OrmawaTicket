@@ -14,7 +14,7 @@ import { Loading } from '../components/Loading';
 import { Skeleton } from '../components/Skeleton';
 import { StickyBar } from '../components/StickyBar';
 import { StockText } from '../components/StockText';
-import { dateTime, rupiah } from '../format';
+import { categoryLabel, dateTime, rupiah } from '../format';
 import { font, space, theme, fonts } from '../theme';
 
 function EventDetailSkeleton() {
@@ -44,7 +44,7 @@ export function EventDetailScreen() {
     return {
       event,
       ormawaName: ormawa.find((o) => o.id === event.ormawaId)?.name,
-      categoryName: categories.find((c) => c.id === event.category)?.name,
+      categoryName: categoryLabel(event.categoryIds, categories),
     };
   }, [id]);
 

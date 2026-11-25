@@ -10,6 +10,7 @@ import { Button } from '../components/Button';
 import { Chip } from '../components/Chip';
 import { EventCard, EventCardSkeleton } from '../components/EventCard';
 import { Loading } from '../components/Loading';
+import { categoryLabel } from '../format';
 import { font, fonts, radius, space, theme } from '../theme';
 
 function HomeSkeleton() {
@@ -32,13 +33,12 @@ export function HomeScreen() {
       container.getEventCategories.execute(),
     ]);
     const ormawaNames = Object.fromEntries(ormawa.map((o) => [o.id, o.name]));
-    const categoryNames = Object.fromEntries(categories.map((c) => [c.id, c.name]));
     return {
       categories,
       items: events.map((event) => ({
         event,
         ormawaName: ormawaNames[event.ormawaId],
-        categoryName: categoryNames[event.category],
+        categoryName: categoryLabel(event.categoryIds, categories),
       })),
     };
   }, [query, category]);

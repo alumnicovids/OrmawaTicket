@@ -22,7 +22,7 @@ const fallbackLook = { icon: Calendar, colors: ['#4338CA', '#7C3AED'] };
 
 // `withTitle`: cetak nama ormawa dan judul di poster seperti flyer.
 function GeneratedPoster({ event, ormawaName, withTitle, featured }) {
-  const { icon: Icon, colors } = looks[event.category] ?? fallbackLook;
+  const { icon: Icon, colors } = looks[event.categoryIds[0]] ?? fallbackLook;
   return (
     <LinearGradient colors={colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fill}>
       <View style={styles.circleBig} />

@@ -8,7 +8,7 @@ export class SearchEvents {
     return [...events]
       .sort((a, b) => new Date(a.date) - new Date(b.date))
       .filter(
-        (e) => (!ormawaId || e.ormawaId === ormawaId) && (!category || e.category === category) && (!q || e.title.toLowerCase().includes(q)),
+        (e) => (!ormawaId || e.ormawaId === ormawaId) && (!category || e.categoryIds.includes(category)) && (!q || e.title.toLowerCase().includes(q)),
       );
   }
 }

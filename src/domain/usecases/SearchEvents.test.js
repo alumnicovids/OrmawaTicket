@@ -35,3 +35,9 @@ test('kategori + judul digabung', async () => {
 test('urut tanggal terdekat dulu', async () => {
   expect((await search()).map((e) => e.id)).toEqual(['e2', 'e5', 'e1', 'e3', 'e4']);
 });
+
+test('event multi-kategori muncul di setiap kategorinya', async () => {
+  expect((await search({ category: 'festival' })).map((e) => e.id)).toEqual(['e1', 'e3']);
+  expect((await search({ category: 'lomba' })).map((e) => e.id)).toEqual(['e5', 'e3', 'e4']);
+  expect((await search({ category: 'seminar' })).map((e) => e.id)).toEqual(['e2', 'e4']);
+});
