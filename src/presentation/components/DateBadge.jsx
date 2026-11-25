@@ -1,12 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { EVENT_TIME_ZONE } from '../format';
 import { font, radius, space, theme } from '../theme';
 
 export function DateBadge({ iso }) {
   const d = new Date(iso);
+  const part = (opts) => d.toLocaleString('id-ID', { ...opts, timeZone: EVENT_TIME_ZONE });
   return (
     <View style={styles.badge}>
-      <Text style={styles.day}>{d.getDate()}</Text>
-      <Text style={styles.month}>{d.toLocaleString('id-ID', { month: 'short' }).toUpperCase()}</Text>
+      <Text style={styles.day}>{part({ day: 'numeric' })}</Text>
+      <Text style={styles.month}>{part({ month: 'short' }).toUpperCase()}</Text>
     </View>
   );
 }

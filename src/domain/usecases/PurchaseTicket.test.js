@@ -24,3 +24,10 @@ test('ditolak: jumlah invalid, stok kurang, event/kategori tidak ada', async () 
   await expect(buy.execute({ eventId: 'x', categoryId: 'vip', quantity: 1 })).rejects.toThrow('Event');
   await expect(buy.execute({ eventId: 'e1', categoryId: 'x', quantity: 1 })).rejects.toThrow('Kategori');
 });
+
+test('batas stok: beli tepat sisa stok berhasil, tambah satu lagi ditolak', async () => {
+  const { events, buy } = setup();
+  await buy.execute({ eventId: 'e1', categoryId: 'vip', quantity: 20 });
+  expect((await events.getById('e1')).categories[1].stock).toBe(0);
+  await expect(buy.execute({ eventId: 'e1', categoryId: 'vip', quantity: 1 })).rejects.toThrow('Stok');
+});

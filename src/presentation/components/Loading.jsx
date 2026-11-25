@@ -1,12 +1,12 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { font, space, theme } from '../theme';
 
-// Error -> pesan; kalau ada `skeleton` -> kerangka layar; selain itu spinner.
+// Error -> pesan; selain itu kerangka layar (`skeleton`).
 export function Loading({ error, skeleton }) {
-  if (!error && skeleton) return skeleton;
+  if (!error) return skeleton;
   return (
     <View style={styles.container}>
-      {error ? <Text style={styles.error}>{error.message}</Text> : <ActivityIndicator />}
+      <Text style={styles.error}>{error.message}</Text>
     </View>
   );
 }
