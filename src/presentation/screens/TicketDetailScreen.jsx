@@ -6,6 +6,7 @@ import Calendar from 'lucide-react-native/icons/calendar';
 import Check from 'lucide-react-native/icons/check';
 import MapPin from 'lucide-react-native/icons/map-pin';
 import { container } from '../../di/container';
+import { ticketStatus } from '../../domain/rules/ticketStatus';
 import { useAsync } from '../hooks/useAsync';
 import { Button } from '../components/Button';
 import { IconText } from '../components/IconText';
@@ -33,6 +34,7 @@ export function TicketDetailScreen() {
   );
   const { data: ticket, error, retry } = useAsync(load);
   if (!ticket) return <Loading error={error} onRetry={retry} skeleton={<TicketSkeleton />} />;
+  const expired = ticketStatus(ticket) === 'expired';
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
       {justBought && (
@@ -43,7 +45,7 @@ export function TicketDetailScreen() {
       )}
       <View style={styles.ticket}>
         <View style={styles.top}>
-          <Text style={styles.status}>BERLAKU</Text>
+          <Text style={[styles.status, expired && styles.statusExpired]}>{expired ? 'SELESAI' : 'BERLAKU'}</Text>
           <Text style={styles.event}>{ticket.eventTitle}</Text>
           <IconText icon={Calendar}>{dateTime(ticket.eventDate)}</IconText>
           <IconText icon={MapPin}>{ticket.eventLocation}</IconText>
@@ -85,6 +87,7 @@ const styles = StyleSheet.create({
   ticket: { borderRadius: radius.lg, backgroundColor: theme.card, ...shadow },
   top: { padding: space.xl, gap: space.xs },
   status: { alignSelf: 'flex-start', paddingVertical: space.xs, paddingHorizontal: space.md, borderRadius: radius.pill, overflow: 'hidden', backgroundColor: theme.primarySoft, color: theme.primary, fontSize: font.xs, fontFamily: fonts.bold },
+  statusExpired: { backgroundColor: theme.border, color: theme.muted },
   event: { fontSize: font.xl, fontFamily: fonts.bold, color: theme.text, marginTop: space.sm },
   text: { fontSize: font.md, color: theme.text },
   muted: { fontSize: font.sm, color: theme.muted },
