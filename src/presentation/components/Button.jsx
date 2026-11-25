@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
-import { font, radius, space, theme } from '../theme';
+import { Pressable, StyleSheet } from 'react-native';
+import { Text } from './Text';
+import { font, radius, space, theme, fonts } from '../theme';
 
 // variant: 'primary' (default) | 'secondary'
 export function Button({ title, onPress, disabled, variant = 'primary', style }) {
@@ -37,6 +38,6 @@ const styles = StyleSheet.create({
   secondary: { backgroundColor: theme.primarySoft },
   pressed: { opacity: 0.85 },
   disabled: { opacity: 0.4 },
-  primaryText: { color: theme.onPrimary, fontSize: font.md, fontWeight: '600' },
-  secondaryText: { color: theme.primary, fontSize: font.md, fontWeight: '600' },
+  primaryText: { color: theme.onPrimary, fontSize: font.md, fontFamily: fonts.semibold },
+  secondaryText: { color: theme.primary, fontSize: font.md, fontFamily: fonts.semibold },
 });

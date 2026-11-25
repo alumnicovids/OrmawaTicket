@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
+import { Text } from '../components/Text';
 import { router, useLocalSearchParams } from 'expo-router';
 import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
@@ -7,7 +8,7 @@ import { Avatar } from '../components/Avatar';
 import { EventCard, EventCardSkeleton } from '../components/EventCard';
 import { Loading } from '../components/Loading';
 import { Skeleton } from '../components/Skeleton';
-import { font, space, theme } from '../theme';
+import { font, space, theme, fonts } from '../theme';
 
 function OrmawaDetailSkeleton() {
   return (
@@ -31,8 +32,8 @@ export function OrmawaDetailScreen() {
     return { ormawa, events, categoryNames: Object.fromEntries(categories.map((c) => [c.id, c.name])) };
   }, [id]);
 
-  const { data, error } = useAsync(load);
-  if (!data) return <Loading error={error} skeleton={<OrmawaDetailSkeleton />} />;
+  const { data, error, retry } = useAsync(load);
+  if (!data) return <Loading error={error} onRetry={retry} skeleton={<OrmawaDetailSkeleton />} />;
 
   const { ormawa, events, categoryNames } = data;
   return (
@@ -61,9 +62,9 @@ const styles = StyleSheet.create({
   list: { backgroundColor: theme.bg },
   content: { padding: space.lg, gap: space.lg },
   header: { gap: space.sm },
-  name: { fontSize: font.xl, fontWeight: '700', color: theme.text },
+  name: { fontSize: font.xl, fontFamily: fonts.bold, color: theme.text },
   muted: { fontSize: font.md, color: theme.muted },
-  section: { fontSize: font.lg, fontWeight: '700', color: theme.text, marginTop: space.md },
+  section: { fontSize: font.lg, fontFamily: fonts.bold, color: theme.text, marginTop: space.md },
   empty: { color: theme.muted, textAlign: 'center' },
   headerSkeleton: { height: 140, borderRadius: 20 },
 });

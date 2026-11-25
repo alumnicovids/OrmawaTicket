@@ -4,7 +4,7 @@ export const theme = {
   bg: '#F8FAFC',
   card: '#FFFFFF',
   text: '#0F172A',
-  muted: '#64748B',
+  muted: '#475569',
   border: '#E2E8F0',
   warning: '#B45309',
   danger: '#DC2626',
@@ -23,4 +23,12 @@ export const shadow = {
   shadowRadius: 12,
   shadowOffset: { width: 0, height: 4 },
   elevation: 3,
+};
+
+// Plus Jakarta Sans: React Native butuh satu nama font per bobot (fontWeight diabaikan).
+export const fonts = {
+  regular: 'PlusJakartaSans_400Regular',
+  semibold: 'PlusJakartaSans_600SemiBold',
+  bold: 'PlusJakartaSans_700Bold',
+  extrabold: 'PlusJakartaSans_800ExtraBold',
 };

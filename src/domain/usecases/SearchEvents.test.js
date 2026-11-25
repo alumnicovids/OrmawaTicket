@@ -24,10 +24,14 @@ test('ormawa + judul digabung, tidak ada hasil -> kosong', async () => {
 
 test('filter kategori event', async () => {
   const r = await search({ category: 'musik' });
-  expect(r.map((e) => e.id)).toEqual(['e1', 'e5']);
+  expect(r.map((e) => e.id)).toEqual(['e5', 'e1']);
 });
 
 test('kategori + judul digabung', async () => {
   expect((await search({ category: 'musik', query: 'open mic' })).map((e) => e.id)).toEqual(['e5']);
   expect(await search({ category: 'seminar', query: 'konser' })).toEqual([]);
+});
+
+test('urut tanggal terdekat dulu', async () => {
+  expect((await search()).map((e) => e.id)).toEqual(['e2', 'e5', 'e1', 'e3', 'e4']);
 });

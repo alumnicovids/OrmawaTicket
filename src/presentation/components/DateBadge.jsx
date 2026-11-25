@@ -1,14 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Text } from './Text';
 import { EVENT_TIME_ZONE } from '../format';
-import { font, radius, space, theme } from '../theme';
+import { font, radius, space, theme, fonts } from '../theme';
 
 export function DateBadge({ iso }) {
   const d = new Date(iso);
   const part = (opts) => d.toLocaleString('id-ID', { ...opts, timeZone: EVENT_TIME_ZONE });
   return (
     <View style={styles.badge}>
-      <Text style={styles.day}>{part({ day: 'numeric' })}</Text>
-      <Text style={styles.month}>{part({ month: 'short' }).toUpperCase()}</Text>
+      <Text style={styles.day} maxFontSizeMultiplier={1.2}>{part({ day: 'numeric' })}</Text>
+      <Text style={styles.month} maxFontSizeMultiplier={1.2}>{part({ month: 'short' }).toUpperCase()}</Text>
     </View>
   );
 }
@@ -25,6 +26,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.card,
     alignItems: 'center',
   },
-  day: { fontSize: font.lg, fontWeight: '700', color: theme.text },
-  month: { fontSize: font.xs, fontWeight: '600', color: theme.primary },
+  day: { fontSize: font.lg, fontFamily: fonts.bold, color: theme.text },
+  month: { fontSize: font.xs, fontFamily: fonts.semibold, color: theme.primary },
 });

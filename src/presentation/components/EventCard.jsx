@@ -1,11 +1,12 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Text } from './Text';
 import MapPin from 'lucide-react-native/icons/map-pin';
 import { DateBadge } from './DateBadge';
 import { EventPoster } from './EventPoster';
 import { IconText } from './IconText';
 import { Skeleton } from './Skeleton';
 import { rupiah } from '../format';
-import { font, radius, shadow, space, theme } from '../theme';
+import { font, radius, shadow, space, theme, fonts } from '../theme';
 
 export function EventCard({ event, ormawaName, categoryName, featured, onPress }) {
   const minPrice = Math.min(...event.categories.map((c) => c.price));
@@ -17,12 +18,12 @@ export function EventCard({ event, ormawaName, categoryName, featured, onPress }
       style={({ pressed }) => [styles.shadow, pressed && styles.pressed]}
     >
       <View style={styles.card}>
-        <EventPoster uri={event.imageUrl}>
+        <EventPoster event={event} ormawaName={ormawaName} withTitle featured={featured}>
           <DateBadge iso={event.date} />
         </EventPoster>
         <View style={styles.body}>
-          <Text style={styles.ormawa}>{[ormawaName, categoryName].filter(Boolean).join(' · ')}</Text>
-          <Text style={featured ? styles.titleFeatured : styles.title} numberOfLines={2}>{event.title}</Text>
+          <Text style={styles.ormawa}>{[event.imageUrl && ormawaName, categoryName].filter(Boolean).join(' · ')}</Text>
+          {event.imageUrl && <Text style={featured ? styles.titleFeatured : styles.title} numberOfLines={2}>{event.title}</Text>}
           <IconText icon={MapPin}>{event.location}</IconText>
           <Text style={soldOut ? styles.soldOut : styles.price}>
             {soldOut ? 'Tiket habis' : `Mulai ${rupiah(minPrice)}`}
@@ -53,11 +54,11 @@ const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, overflow: 'hidden', backgroundColor: theme.card },
   pressed: { opacity: 0.92 },
   body: { padding: space.lg, gap: space.xs },
-  ormawa: { fontSize: font.xs, fontWeight: '600', color: theme.primary },
-  title: { fontSize: font.lg, fontWeight: '700', color: theme.text },
-  titleFeatured: { fontSize: font.xl, fontWeight: '700', color: theme.text },
-  price: { marginTop: space.xs, fontSize: font.md, fontWeight: '700', color: theme.text },
-  soldOut: { marginTop: space.xs, fontSize: font.md, fontWeight: '700', color: theme.danger },
+  ormawa: { fontSize: font.xs, fontFamily: fonts.semibold, color: theme.primary },
+  title: { fontSize: font.lg, fontFamily: fonts.bold, color: theme.text },
+  titleFeatured: { fontSize: font.xl, fontFamily: fonts.bold, color: theme.text },
+  price: { marginTop: space.xs, fontSize: font.md, fontFamily: fonts.bold, color: theme.text },
+  soldOut: { marginTop: space.xs, fontSize: font.md, fontFamily: fonts.bold, color: theme.danger },
   posterSkeleton: { aspectRatio: 16 / 9, borderRadius: 0 },
   lineShort: { height: 12, width: '30%' },
   lineLong: { height: 20, width: '80%', marginVertical: space.xs },

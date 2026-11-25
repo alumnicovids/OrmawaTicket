@@ -1,7 +1,9 @@
 import { useCallback } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Text } from '../components/Text';
 import { router, useLocalSearchParams } from 'expo-router';
 import Calendar from 'lucide-react-native/icons/calendar';
+import ChevronRight from 'lucide-react-native/icons/chevron-right';
 import MapPin from 'lucide-react-native/icons/map-pin';
 import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
@@ -13,7 +15,7 @@ import { Skeleton } from '../components/Skeleton';
 import { StickyBar } from '../components/StickyBar';
 import { StockText } from '../components/StockText';
 import { dateTime, rupiah } from '../format';
-import { font, space, theme } from '../theme';
+import { font, space, theme, fonts } from '../theme';
 
 function EventDetailSkeleton() {
   return (
@@ -46,15 +48,15 @@ export function EventDetailScreen() {
     };
   }, [id]);
 
-  const { data, error } = useAsync(load);
-  if (!data) return <Loading error={error} skeleton={<EventDetailSkeleton />} />;
+  const { data, error, retry } = useAsync(load);
+  if (!data) return <Loading error={error} onRetry={retry} skeleton={<EventDetailSkeleton />} />;
 
   const { event, ormawaName, categoryName } = data;
   const soldOut = event.categories.every((c) => c.stock === 0);
   return (
     <View style={styles.container}>
       <ScrollView>
-        <EventPoster uri={event.imageUrl} />
+        <EventPoster event={event} />
         <View style={styles.body}>
           <Text style={styles.ormawa}>{[ormawaName, categoryName].filter(Boolean).join(' · ')}</Text>
           <Text style={styles.title}>{event.title}</Text>
@@ -66,10 +68,15 @@ export function EventDetailScreen() {
 
           <Text style={styles.section}>Kategori tiket</Text>
           {event.categories.map((c) => (
-            <Card key={c.id}>
-              <Text style={styles.categoryName}>{c.name}</Text>
-              <Text style={styles.price}>{rupiah(c.price)}</Text>
-              <StockText stock={c.stock} />
+            <Card key={c.id} onPress={c.stock ? () => router.push(`/checkout/${event.id}?category=${c.id}`) : undefined}>
+              <View style={styles.categoryRow}>
+                <View style={styles.categoryInfo}>
+                  <Text style={styles.categoryName}>{c.name}</Text>
+                  <Text style={styles.price}>{rupiah(c.price)}</Text>
+                  <StockText stock={c.stock} />
+                </View>
+                {c.stock > 0 && <ChevronRight color={theme.muted} size={20} />}
+              </View>
             </Card>
           ))}
         </View>
@@ -88,12 +95,14 @@ export function EventDetailScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.bg },
   body: { padding: space.lg, gap: space.sm },
-  ormawa: { fontSize: font.sm, fontWeight: '600', color: theme.primary },
-  title: { fontSize: font.xxl, fontWeight: '700', color: theme.text },
-  section: { fontSize: font.lg, fontWeight: '700', color: theme.text, marginTop: space.lg },
+  ormawa: { fontSize: font.sm, fontFamily: fonts.semibold, color: theme.primary },
+  title: { fontSize: font.xxl, fontFamily: fonts.bold, color: theme.text },
+  section: { fontSize: font.lg, fontFamily: fonts.bold, color: theme.text, marginTop: space.lg },
   text: { fontSize: font.md, color: theme.text, lineHeight: 24 },
-  categoryName: { fontSize: font.md, fontWeight: '600', color: theme.text },
-  price: { fontSize: font.lg, fontWeight: '700', color: theme.text },
+  categoryRow: { flexDirection: 'row', alignItems: 'center' },
+  categoryInfo: { flex: 1, gap: space.xs },
+  categoryName: { fontSize: font.md, fontFamily: fonts.semibold, color: theme.text },
+  price: { fontSize: font.lg, fontFamily: fonts.bold, color: theme.text },
   posterSkeleton: { aspectRatio: 16 / 9, borderRadius: 0 },
   lineShort: { height: 14, width: '30%' },
   lineTitle: { height: 28, width: '80%' },

@@ -1,24 +1,23 @@
 import { useCallback, useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { FlatList, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Text } from '../components/Text';
 import { router } from 'expo-router';
 import Search from 'lucide-react-native/icons/search';
+import X from 'lucide-react-native/icons/x';
 import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
+import { Button } from '../components/Button';
 import { Chip } from '../components/Chip';
 import { EventCard, EventCardSkeleton } from '../components/EventCard';
 import { Loading } from '../components/Loading';
-import { font, radius, space, theme } from '../theme';
+import { font, fonts, radius, space, theme } from '../theme';
 
 function HomeSkeleton() {
   return (
-    <SafeAreaView edges={['top']} style={styles.container}>
-      <Text style={styles.title}>Temukan event kampus</Text>
-      <View style={styles.content}>
-        <EventCardSkeleton />
-        <EventCardSkeleton />
-      </View>
-    </SafeAreaView>
+    <View style={styles.content}>
+      <EventCardSkeleton />
+      <EventCardSkeleton />
+    </View>
   );
 }
 
@@ -45,14 +44,14 @@ export function HomeScreen() {
   }, [query, category]);
 
   // Data lama tetap tampil saat memuat ulang, jadi TextInput tidak ikut hilang.
-  const { data, error } = useAsync(load);
-  if (!data) return <Loading error={error} skeleton={<HomeSkeleton />} />;
+  const { data, error, retry } = useAsync(load);
+  if (!data) return <Loading error={error} onRetry={retry} skeleton={<HomeSkeleton />} />;
 
   const chips = [{ id: null, name: 'Semua' }, ...data.categories];
   const filtering = Boolean(query.trim()) || category !== null;
+  const reset = () => { setQuery(''); setCategory(null); };
   return (
-    <SafeAreaView edges={['top']} style={styles.container}>
-      <Text style={styles.title}>Temukan event kampus</Text>
+    <View style={styles.container}>
       <View style={styles.searchBox}>
         <Search color={theme.muted} size={18} />
         <TextInput
@@ -62,9 +61,13 @@ export function HomeScreen() {
           accessibilityLabel="Cari event"
           value={query}
           onChangeText={setQuery}
-          clearButtonMode="while-editing"
           returnKeyType="search"
         />
+        {query !== '' && (
+          <Pressable accessibilityRole="button" accessibilityLabel="Hapus pencarian" hitSlop={12} onPress={() => setQuery('')}>
+            <X color={theme.muted} size={18} />
+          </Pressable>
+        )}
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll} contentContainerStyle={styles.chips}>
         {chips.map((c) => (
@@ -76,7 +79,12 @@ export function HomeScreen() {
         contentContainerStyle={styles.content}
         data={data.items}
         keyExtractor={(item) => item.event.id}
-        ListEmptyComponent={<Text style={styles.empty}>Tidak ada event yang cocok.</Text>}
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <Text style={styles.emptyText}>Tidak ada event yang cocok.</Text>
+            {filtering && <Button title="Reset filter" variant="secondary" onPress={reset} />}
+          </View>
+        }
         renderItem={({ item, index }) => (
           <EventCard
             {...item}
@@ -85,13 +93,12 @@ export function HomeScreen() {
           />
         )}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.bg },
-  title: { fontSize: font.xxl, fontWeight: '700', color: theme.text, paddingHorizontal: space.lg, paddingTop: space.lg },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -104,9 +111,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.border,
   },
-  search: { flex: 1, minHeight: 48, fontSize: font.md, color: theme.text },
+  search: { flex: 1, minHeight: 48, fontSize: font.md, color: theme.text, fontFamily: fonts.regular },
   chipsScroll: { flexGrow: 0, flexShrink: 0 },
   chips: { paddingHorizontal: space.lg, paddingBottom: space.md, gap: space.sm },
   content: { padding: space.lg, gap: space.lg },
-  empty: { color: theme.muted, textAlign: 'center', marginTop: space.xxl },
+  empty: { alignItems: 'center', gap: space.lg, marginTop: space.xxl },
+  emptyText: { color: theme.muted, fontSize: font.md },
 });

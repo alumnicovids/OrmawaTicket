@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Text } from './Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from './Button';
-import { font, space, theme } from '../theme';
+import { font, space, theme, fonts } from '../theme';
 
 // Bar bawah: label + nilai (mis. harga) di kiri, tombol CTA di kanan.
 export function StickyBar({ label, value, buttonTitle, onPress, disabled }) {
@@ -23,6 +24,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: space.lg, padding: space.lg },
   info: { flex: 1 },
   label: { fontSize: font.xs, color: theme.muted },
-  value: { fontSize: font.lg, fontWeight: '700', color: theme.text },
+  value: { fontSize: font.lg, fontFamily: fonts.bold, color: theme.text },
   button: { minWidth: 140 },
 });

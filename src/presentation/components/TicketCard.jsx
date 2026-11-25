@@ -1,8 +1,9 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Text } from './Text';
 import ChevronRight from 'lucide-react-native/icons/chevron-right';
 import { Skeleton } from './Skeleton';
 import { dateTime, rupiah } from '../format';
-import { font, radius, shadow, space, theme } from '../theme';
+import { font, radius, shadow, space, theme, fonts } from '../theme';
 
 export function TicketCard({ ticket, onPress }) {
   return (
@@ -14,8 +15,8 @@ export function TicketCard({ ticket, onPress }) {
       <View style={styles.main}>
         <Text style={styles.code}>{ticket.id}</Text>
         <Text style={styles.title} numberOfLines={2}>{ticket.eventTitle}</Text>
+        <Text style={styles.muted}>{dateTime(ticket.eventDate)} · {ticket.eventLocation}</Text>
         <Text style={styles.muted}>{ticket.categoryName} × {ticket.quantity} · {rupiah(ticket.totalPrice)}</Text>
-        <Text style={styles.muted}>Dibeli {dateTime(ticket.purchasedAt)}</Text>
       </View>
       <ChevronRight color={theme.muted} size={20} />
     </Pressable>
@@ -46,8 +47,8 @@ const styles = StyleSheet.create({
   },
   pressed: { opacity: 0.92 },
   main: { flex: 1, gap: space.xs },
-  code: { fontSize: font.xs, fontWeight: '700', color: theme.primary, letterSpacing: 1 },
-  title: { fontSize: font.lg, fontWeight: '700', color: theme.text },
+  code: { fontSize: font.xs, fontFamily: fonts.bold, color: theme.primary, letterSpacing: 1 },
+  title: { fontSize: font.lg, fontFamily: fonts.bold, color: theme.text },
   muted: { fontSize: font.sm, color: theme.muted },
   lineShort: { height: 12, width: '30%' },
   lineLong: { height: 20, width: '75%', marginVertical: space.xs },

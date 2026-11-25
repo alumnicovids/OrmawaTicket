@@ -1,4 +1,5 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
+import { Text } from '../components/Text';
 import { router } from 'expo-router';
 import { container } from '../../di/container';
 import { useAsync } from '../hooks/useAsync';
@@ -6,7 +7,7 @@ import { Avatar } from '../components/Avatar';
 import { Card } from '../components/Card';
 import { Loading } from '../components/Loading';
 import { Skeleton } from '../components/Skeleton';
-import { font, space, theme } from '../theme';
+import { font, space, theme, fonts } from '../theme';
 
 const load = async () => {
   const [ormawa, events] = await Promise.all([container.getOrmawaList.execute(), container.searchEvents.execute()]);
@@ -22,8 +23,8 @@ function OrmawaSkeleton() {
 }
 
 export function OrmawaScreen() {
-  const { data, error } = useAsync(load);
-  if (!data) return <Loading error={error} skeleton={<OrmawaSkeleton />} />;
+  const { data, error, retry } = useAsync(load);
+  if (!data) return <Loading error={error} onRetry={retry} skeleton={<OrmawaSkeleton />} />;
   return (
     <FlatList
       style={styles.list}
@@ -51,8 +52,8 @@ const styles = StyleSheet.create({
   content: { padding: space.lg, gap: space.lg },
   row: { flexDirection: 'row', gap: space.md },
   info: { flex: 1, gap: space.xs },
-  name: { fontSize: font.lg, fontWeight: '700', color: theme.text },
+  name: { fontSize: font.lg, fontFamily: fonts.bold, color: theme.text },
   muted: { fontSize: font.sm, color: theme.muted },
-  count: { fontSize: font.xs, fontWeight: '600', color: theme.primary },
+  count: { fontSize: font.xs, fontFamily: fonts.semibold, color: theme.primary },
   skeleton: { height: 96, borderRadius: 20 },
 });

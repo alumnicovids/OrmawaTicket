@@ -13,6 +13,7 @@ test('beli berhasil: stok berkurang, tiket tersimpan, total benar', async () => 
   const { events, tickets, buy } = setup();
   const t = await buy.execute({ eventId: 'e1', categoryId: 'vip', quantity: 2 });
   expect(t.totalPrice).toBe(150000);
+  expect([t.eventDate, t.eventLocation]).toEqual(['2026-12-12T19:00:00+08:00', 'Aula Utama']);
   expect((await events.getById('e1')).categories[1].stock).toBe(18);
   expect(await tickets.getAll()).toHaveLength(1);
 });

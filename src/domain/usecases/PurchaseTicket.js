@@ -17,6 +17,8 @@ export class PurchaseTicket {
     await this.eventRepository.reduceStock(eventId, categoryId, quantity);
     return this.ticketRepository.add({
       eventTitle: event.title,
+      eventDate: event.date,
+      eventLocation: event.location,
       eventId,
       categoryId,
       categoryName: category.name,

@@ -9,7 +9,7 @@ export function IconButton({ icon: Icon, label, onPress, disabled }) {
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={[styles.button, disabled && styles.disabled]}
+      style={({ pressed }) => [styles.button, disabled && styles.disabled, pressed && styles.pressed]}
     >
       <Icon color={theme.primary} size={20} />
     </Pressable>
@@ -26,4 +26,5 @@ const styles = StyleSheet.create({
     backgroundColor: theme.primarySoft,
   },
   disabled: { opacity: 0.4 },
+  pressed: { opacity: 0.7 },
 });

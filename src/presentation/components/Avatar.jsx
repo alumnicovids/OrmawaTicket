@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { font, radius, theme } from '../theme';
+import { StyleSheet, View } from 'react-native';
+import { Text } from './Text';
+import { font, radius, theme, fonts } from '../theme';
 
 // Warna dipilih dari nama; style disiapkan di StyleSheet agar tanpa inline style.
 const colors = StyleSheet.create({
@@ -26,6 +27,6 @@ const styles = StyleSheet.create({
   base: { alignItems: 'center', justifyContent: 'center', borderRadius: radius.md },
   medium: { width: 48, height: 48 },
   large: { width: 64, height: 64, borderRadius: radius.lg },
-  text: { color: theme.onPrimary, fontSize: font.md, fontWeight: '700' },
-  textLarge: { color: theme.onPrimary, fontSize: font.xl, fontWeight: '700' },
+  text: { color: theme.onPrimary, fontSize: font.md, fontFamily: fonts.bold },
+  textLarge: { color: theme.onPrimary, fontSize: font.xl, fontFamily: fonts.bold },
 });
